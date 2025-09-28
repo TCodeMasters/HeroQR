@@ -1,6 +1,6 @@
 # HeroQR - A Powerful PHP QR Code Library
 
-**Last Updated**: Apr 2025   
+**Last Updated**: Sep 2025   
 **Author**: Amirreza Ebrahimi   
 **Contributors**: None yet   
 **License**: MIT License
