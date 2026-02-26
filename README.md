@@ -1,11 +1,16 @@
 # HeroQR - A Powerful PHP QR Code Library
 
-**Last Updated**: Sep 2025   
-**Author**: Amirreza Ebrahimi   
-**Contributors**: None yet   
-**License**: MIT License
+**Last Updated:** February 2026   
+**Author:** Amirreza Ebrahimi   
+**Contributors:** None yet   
+**License:** MIT License
 
 - HeroQR is an advanced and modular PHP library designed to simplify the creation, customization, and management of QR codes. Whether you need a basic QR code or a highly customized one with embedded logos, colors, markers, and cursors, HeroQR has you covered. You can fully customize the appearance of your QR code by adjusting the markers (for corner customization), cursors (for design enhancements), and even the shapes of the QR code itself. This level of customization allows you to tailor your QR codes to fit your needs precisely.
+
+> [!TIP]
+> **Try the Beta!** We are currently testing **v1.2.0-beta** which introduces highly requested features like **SVG Custom Styling** (Shapes, Markers, and Cursors).
+> If you want to experiment with these new features and provide feedback, check out the [Beta Documentation](https://github.com/amirezaeb/heroqr/tree/develop) or install it via:
+> `composer require amirezaeb/heroqr:1.2.0-beta`
 
 ## Table of Contents
 
