@@ -3,13 +3,9 @@
 namespace HeroQR\Contracts\Managers;
 
 /**
- * Interface LogoManagerInterface
- *
  * This interface defines methods for managing the logo that can be included
  * in a QR code. It provides functionality for setting the logo's file path,
  * size, background visibility, and retrieving those properties.
- *
- * @package HeroQR\Contracts\Managers
  */
 interface LogoManagerInterface
 {

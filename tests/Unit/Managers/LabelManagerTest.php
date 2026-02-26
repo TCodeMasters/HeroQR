@@ -15,7 +15,7 @@ class LabelManagerTest extends TestCase
     private LabelManager $labelManager;
 
     /**
-     * Setup method
+     * Initializes the LabelManager instance
      */
     protected function setUp(): void
     {
@@ -121,9 +121,15 @@ class LabelManagerTest extends TestCase
         $defaultColor = $label->getLabelColor();
         $this->assertEquals([0, 0, 0], [$defaultColor->getRed(), $defaultColor->getGreen(), $defaultColor->getBlue()], 'Default label color should be black');
 
-        $label->setLabelColor('#FF573390');
+        $label->setLabelColor(['Red' => 255, 'Green' => 87 , 'Blue' => 51, 'Alpha' => 0.5]);
         $customColor = $label->getLabelColor();
-        $this->assertEquals([255, 87, 51, 72], [$customColor->getRed(), $customColor->getGreen(), $customColor->getBlue(), $customColor->getAlpha()], 'Custom color values do not match expected');
+
+        $this->assertEqualsWithDelta([255, 87, 51, 0.5], [
+            $customColor->getRed(),
+            $customColor->getGreen(),
+            $customColor->getBlue(),
+            $customColor->getOpacity()
+        ],0.01, 'Custom color values do not match expected');
     }
 
     /*** 
@@ -135,12 +141,21 @@ class LabelManagerTest extends TestCase
         $label = $this->labelManager;
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid hex label color format: #fffffff');
-        $label->setLabelColor('#fffffff');
+        $this->expectExceptionMessage("Red must be integer (0-255). Input: 260");
+        $label->setLabelColor(['Red' => 260, 'Green' => 87 , 'Blue' => 51, 'Alpha' => 0.5]);
+    }
+
+    /***
+     * Test the behavior when an invalid label alpha color format is set
+     */
+    #[Test]
+    public function isInvalidLabelAlphaColor(): void
+    {
+        $label = $this->labelManager;
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid hex label color format: ffffff');
-        $label->setLabelColor('ffffff');
+        $this->expectExceptionMessage("Alpha must be between 0 and 1.");
+        $label->setLabelColor(['Red' => 255, 'Green' => 87 , 'Blue' => 51, 'Alpha' => 10]);
     }
 
     /*** 

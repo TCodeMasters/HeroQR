@@ -2,14 +2,14 @@
 
 namespace HeroQR\Tests\Unit\DataTypes;
 
-use HeroQR\DataTypes\Wifi;
+use HeroQR\DataTypes\WifiValidator;
 use PHPUnit\Framework\{Attributes\DataProvider, Attributes\Test, TestCase};
 
 /**
  * Class WifiTest
  * Tests the Wifi class.
  */
-class WifiTest extends TestCase
+class WifiValidatorTest extends TestCase
 {
     /**
      * Provides a list of WiFi configuration strings and their expected validation results
@@ -31,12 +31,12 @@ class WifiTest extends TestCase
     }
 
     /**
-     * Test Wi-Fi string validation using various valid and invalid cases
+     * Tests Wi-Fi string validation using various valid and invalid cases
      */
     #[Test]
     #[DataProvider('wifiStringProvider')]
-    public function wifiValidation(string $wifiString, bool $expected): void
+    public function isWifiValid(string $wifiString, bool $expected): void
     {
-        $this->assertSame($expected, Wifi::validate($wifiString), 'Wi-Fi string failed validation: ' . $wifiString);
+        $this->assertSame($expected, WifiValidator::validate($wifiString), 'Wi-Fi string failed validation: ' . $wifiString);
     }
 }

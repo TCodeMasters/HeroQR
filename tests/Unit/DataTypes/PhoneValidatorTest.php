@@ -2,14 +2,14 @@
 
 namespace HeroQR\Tests\Unit\DataTypes;
 
-use HeroQR\DataTypes\Phone;
+use HeroQR\DataTypes\PhoneValidator;
 use PHPUnit\Framework\{Attributes\DataProvider, Attributes\Test, TestCase};
 
 /**
  * Class PhoneTest
  * Tests the Phone class
  */
-class PhoneTest extends TestCase
+class PhoneValidatorTest extends TestCase
 {
     /*
      * Provides a list of phone numbers and expected results (true for valid, false for invalid)
@@ -35,16 +35,16 @@ class PhoneTest extends TestCase
      */
     #[Test]
     #[DataProvider('phoneNumbersProvider')]
-    public function PhoneValidation(string $number, bool $expected): void
+    public function isPhoneValid(string $number, bool $expected): void
     {
         if (!class_exists(\libphonenumber\PhoneNumberUtil::class)) {
             $this->expectException(\RuntimeException::class);
-            Phone::validate($number);
+            PhoneValidator::validate($number);
             return;
         }
 
         try {
-            $result = Phone::validate($number);
+            $result = PhoneValidator::validate($number);
         } catch (\libphonenumber\NumberParseException) {
             $result = false;
         }

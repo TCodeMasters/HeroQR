@@ -40,7 +40,7 @@
     "suggest": {
         "giggsey/libphonenumber-for-php": "Required for advanced phone number validation",
         "setasign/fpdf": "Required for PDF generation features",
-        "ext-gd": "Required for image processing, including generating PNG images"
+        "ext-gd": "Required for generating PNG images or advanced QR customization"
     },
     "extra": {
         "laravel": {

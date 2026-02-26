@@ -2,27 +2,32 @@
 
 declare(strict_types=1);
 
-namespace HeroQR\Contracts\Customs;
+namespace HeroQR\Contracts\Customs\Writer;
 
-use Endroid\QrCode\{QrCodeInterface, RoundBlockSizeMode};
-use Endroid\QrCode\{Logo\LogoInterface, Matrix\MatrixInterface};
-use Endroid\QrCode\ImageData\{LabelImageData, LogoImageData};
-use Endroid\QrCode\Label\{LabelAlignment, LabelInterface};
-use Endroid\QrCode\Writer\{AbstractGdWriter, WriterInterface};
-use Endroid\QrCode\Writer\Result\{GdResult, ResultInterface};
-use HeroQR\Customs\{ImageOverlay, ShapePaths};
+use Endroid\QrCode\{ImageData\LabelImageData,
+    ImageData\LogoImageData,
+    Label\LabelAlignment,
+    Label\LabelInterface,
+    Logo\LogoInterface,
+    Matrix\MatrixInterface,
+    QrCodeInterface,
+    RoundBlockSizeMode,
+    Writer\AbstractGdWriter,
+    Writer\Result\GdResult,
+    Writer\Result\ResultInterface,
+    Writer\WriterInterface};
+use HeroQR\{Contracts\Customs\Drawers\PngDrawer,
+    Customs\ImageOverlay, Customs\ShapePaths};
 
 /**
  * The AbstractWriter class is responsible for generating QR code images using the GD library
  * This class provides base functionality for creating QR code images with options like logo and label embedding
  * Subclasses should implement specific logic for rendering QR codes using the GD image processing library
- *
- * @package HeroQR\Contracts\Customs
  */
-readonly abstract class AbstractWriter extends AbstractGdWriter implements WriterInterface
+readonly abstract class AbstractPngWriter extends AbstractGdWriter implements WriterInterface
 {
-    private const QUALITY_MULTIPLIER = 10;
-    private ImageOverlay $imageOverlay;
+    protected const QUALITY_MULTIPLIER = 10;
+    protected ImageOverlay $imageOverlay;
     protected string $blockShape;
 
     public function __construct($background, $overlay, $blockShape)
@@ -40,7 +45,6 @@ readonly abstract class AbstractWriter extends AbstractGdWriter implements Write
      * @param array $options Additional options for the QR code generation
      *
      * @return ResultInterface The result containing the generated QR code image
-     *
      * @throws \Exception If the GD extension is not loaded
      */
     public function write(
@@ -57,14 +61,11 @@ readonly abstract class AbstractWriter extends AbstractGdWriter implements Write
         $matrix = $this->getMatrix($qrCode);
         $baseBlockSize = (RoundBlockSizeMode::Margin === $qrCode->getRoundBlockSizeMode() ? 10 : intval($matrix->getBlockSize())) * self::QUALITY_MULTIPLIER;
 
-        $baseImage = $this->createBaseImage($matrix, $baseBlockSize);
-        $foregroundColor = $this->allocateForegroundColor($baseImage, $qrCode);
-
-        Drawer::drawQrCode($baseImage, $matrix, $baseBlockSize, $foregroundColor, $qrCode, $this->blockShape, $logo, $this->imageOverlay);
+        $baseImage = PngDrawer::drawQrCode($matrix, $qrCode, $logo, $this->imageOverlay, $this->blockShape, $baseBlockSize);
 
         $targetImage = $this->createTargetImage($matrix, $qrCode, $label);
 
-        Drawer::copyResampledImage(
+        PngDrawer::copyResampledImage(
             $targetImage,
             $baseImage,
             ['X' => $matrix->getMarginLeft(), 'Y' => $matrix->getMarginRight(), 'Width' => $matrix->getInnerSize(), 'Height' => $matrix->getInnerSize()],
@@ -84,53 +85,6 @@ readonly abstract class AbstractWriter extends AbstractGdWriter implements Write
         }
 
         return $result;
-    }
-
-    /**
-     * Creates the base image for the QR code
-     *
-     * @param MatrixInterface $matrix The matrix that defines the block layout for the QR code
-     * @param int $baseBlockSize The size of each block in the QR code
-     *
-     * @return \GdImage The created base image resource
-     */
-    private function createBaseImage(
-        MatrixInterface $matrix,
-        int             $baseBlockSize
-    ): \GdImage
-    {
-        $baseImage = imagecreatetruecolor($matrix->getBlockCount() * $baseBlockSize, $matrix->getBlockCount() * $baseBlockSize);
-
-        imageantialias($baseImage, true);
-        imagesavealpha($baseImage, true);
-        imagealphablending($baseImage, false);
-
-        $transparentColor = imagecolorallocatealpha($baseImage, 0, 0, 0, 127);
-        imagefill($baseImage, 0, 0, $transparentColor);
-
-        return $baseImage;
-    }
-
-    /**
-     * Allocates the foreground color for the base image
-     *
-     * @param \GdImage $baseImage The base image to apply the foreground color to
-     * @param QrCodeInterface $qrCode The QR code object to get the foreground color from
-     *
-     * @return int The allocated color identifier
-     */
-    private function allocateForegroundColor(
-        \GdImage        $baseImage,
-        QrCodeInterface $qrCode
-    ): int
-    {
-        return imagecolorallocatealpha(
-            $baseImage,
-            $qrCode->getForegroundColor()->getRed(),
-            $qrCode->getForegroundColor()->getGreen(),
-            $qrCode->getForegroundColor()->getBlue(),
-            $qrCode->getForegroundColor()->getAlpha()
-        );
     }
 
     /**
@@ -194,17 +148,19 @@ readonly abstract class AbstractWriter extends AbstractGdWriter implements Write
         $logoImageData = LogoImageData::createForLogo($logo);
 
         if ('image/png' !== $logoImageData->getMimeType()) {
-            throw new \Exception('PNG Writer does not support SVG logo');
+            throw new \Exception('PNG Writer does not support ' . substr($logoImageData->getMimeType(), 6) . ' logo');
         }
 
         $targetImage = $result->getImage();
         $matrix = $result->getMatrix();
 
+        $xOffsetStart = intval($matrix->getOuterSize() / 2 - $logoImageData->getWidth() / 2);
+        $yOffsetStart = intval($matrix->getOuterSize() / 2 - $logoImageData->getHeight() / 2);
+
         if ($logoImageData->getPunchoutBackground()) {
-            $transparent = imagecolorallocatealpha($targetImage, 255, 255, 255, 127);
+            $transparent = imagecolorallocatealpha($targetImage, 0, 0, 0, 127);
             imagealphablending($targetImage, false);
-            $xOffsetStart = intval($matrix->getOuterSize() / 2 - $logoImageData->getWidth() / 2);
-            $yOffsetStart = intval($matrix->getOuterSize() / 2 - $logoImageData->getHeight() / 2);
+
             for ($xOffset = $xOffsetStart; $xOffset < $xOffsetStart + $logoImageData->getWidth(); ++$xOffset) {
                 for ($yOffset = $yOffsetStart; $yOffset < $yOffsetStart + $logoImageData->getHeight(); ++$yOffset) {
                     imagesetpixel($targetImage, $xOffset, $yOffset, $transparent);
@@ -212,11 +168,16 @@ readonly abstract class AbstractWriter extends AbstractGdWriter implements Write
             }
         }
 
-        Drawer::copyResampledImage(
-            $targetImage,
-            $logoImageData->getImage(),
-            ['X' => intval($matrix->getOuterSize() / 2 - $logoImageData->getWidth() / 2), 'Y' => intval($matrix->getOuterSize() / 2 - $logoImageData->getWidth() / 2), 'Width' => $logoImageData->getWidth(), 'Height' => $logoImageData->getHeight()],
-            ['X' => 0, 'Y' => 0, 'Width' => imagesy($logoImageData->getImage()), 'Height' => imagesy($logoImageData->getImage())]
+        imagealphablending($targetImage, true);
+        imagesavealpha($targetImage, true);
+
+        $logoImage = $logoImageData->getImage();
+        imagealphablending($logoImage, true);
+
+        PngDrawer::copyResampledImage(
+            $targetImage, $logoImage,
+            ['X' => $xOffsetStart, 'Y' => $yOffsetStart, 'Width' => $logoImageData->getWidth(), 'Height' => $logoImageData->getHeight()],
+            ['X' => 0, 'Y' => 0, 'Width' => imagesx($logoImage), 'Height' => imagesy($logoImage)]
         );
 
         return new GdResult($matrix, $targetImage);

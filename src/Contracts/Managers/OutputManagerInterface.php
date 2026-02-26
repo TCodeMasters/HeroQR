@@ -5,23 +5,19 @@ namespace HeroQR\Contracts\Managers;
 use Endroid\QrCode\{Matrix\Matrix,Writer\Result\ResultInterface};
 
 /**
- * Interface OutputManagerInterface
- *
  * This interface defines methods for managing QR Code output operations, including
  * saving the QR code to a file, retrieving its data URI, and getting the matrix
  * representation of the QR code.
- *
- * @package HeroQR\Contracts\Managers
  */
 interface OutputManagerInterface
 {
     /**
-     * Save the QR Code output to a file
+     * Save the QR code output to a file
      *
-     * @param ResultInterface $builder
-     * @param string $path
-     * @return bool
-     * @throws \InvalidArgumentException if the format is unsupported or saving fails
+     * @param ResultInterface $builder QR code result builder
+     * @param string $path File path without extension
+     * @return bool True on success
+     * @throws \InvalidArgumentException If the format is unsupported
      */
     public function saveTo(ResultInterface $builder, string $path): bool;
 

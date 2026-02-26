@@ -2,14 +2,14 @@
 
 namespace HeroQR\Tests\Unit\DataTypes;
 
-use HeroQR\DataTypes\Url;
+use HeroQR\DataTypes\UrlValidator;
 use PHPUnit\Framework\{Attributes\DataProvider, Attributes\Test, TestCase};
 
 /**
  * Class UrlTest
  * Tests the Url class.
  */
-class UrlTest extends TestCase
+class UrlValidatorTest extends TestCase
 {
     /**
      * Provides a list of general URLs and their expected validation results
@@ -32,23 +32,23 @@ class UrlTest extends TestCase
     }
 
     /**
-     * Test URL validation with multiple general cases
+     * Tests URL validation with multiple general cases
      */
     #[Test]
     #[DataProvider('urlsTestingProvider')]
     public function isValidUrl(string $url, bool $expected): void
     {
-        $this->assertSame($expected, Url::validate($url), 'URL validation failed for: ' . $url);
+        $this->assertSame($expected, UrlValidator::validate($url), 'URL validation failed for: ' . $url);
     }
 
     /**
-     * Test URL with long query string
+     * URL with long query string
      */
     #[Test]
     public function isValidUrlWithLongQueryString(): void
     {
         $url = 'https://example.com/search?' . str_repeat('q=valid&', 100);
-        $this->assertTrue(Url::validate($url), 'Valid URL with long query string failed validation');
+        $this->assertTrue(UrlValidator::validate($url), 'Valid URL with long query string failed validation');
     }
 
     /**
@@ -58,7 +58,7 @@ class UrlTest extends TestCase
     public function isValidUrlWithoutSecurityIssues(): void
     {
         $url = 'https://www.example.com/path/to/resource?query=valid';
-        $this->assertTrue(Url::validate($url), 'Valid URL without security issues failed validation');
+        $this->assertTrue(UrlValidator::validate($url), 'Valid URL without security issues failed validation');
     }
 
     /**
@@ -68,7 +68,7 @@ class UrlTest extends TestCase
     public function isValidUrlWithIpAddress(): void
     {
         $url = 'http://127.0.0.1';
-        $this->assertTrue(Url::validate($url), 'Valid URL with IP address failed validation');
+        $this->assertTrue(UrlValidator::validate($url), 'Valid URL with IP address failed validation');
     }
 
     /**
@@ -78,7 +78,7 @@ class UrlTest extends TestCase
     public function isInvalidUrlWithSqlInjection(): void
     {
         $url = 'https://example.com/?search=union+select';
-        $this->assertFalse(Url::validate($url), 'URL containing SQL injection passed');
+        $this->assertFalse(UrlValidator::validate($url), 'URL containing SQL injection passed');
     }
 
     /**
@@ -88,7 +88,7 @@ class UrlTest extends TestCase
     public function isInvalidUrlWithScriptTag(): void
     {
         $url = 'https://example.com/?search=<script>alert("xss")</script>';
-        $this->assertFalse(Url::validate($url), 'URL containing script tag passed');
+        $this->assertFalse(UrlValidator::validate($url), 'URL containing script tag passed');
     }
 
     /**
@@ -98,7 +98,7 @@ class UrlTest extends TestCase
     public function isInvalidUrlWithPathTraversal(): void
     {
         $url = 'https://example.com/../../etc/passwd';
-        $this->assertFalse(Url::validate($url), 'URL with path traversal passed');
+        $this->assertFalse(UrlValidator::validate($url), 'URL with path traversal passed');
     }
 
     /**
@@ -108,7 +108,7 @@ class UrlTest extends TestCase
     public function isInvalidUrlWithOnlyProtocol(): void
     {
         $url = 'https://';
-        $this->assertFalse(Url::validate($url), 'URL with only protocol passed validation');
+        $this->assertFalse(UrlValidator::validate($url), 'URL with only protocol passed validation');
     }
 
     /**
@@ -118,6 +118,6 @@ class UrlTest extends TestCase
     public function isInvalidEmptyUrl(): void
     {
         $url = '';
-        $this->assertFalse(Url::validate($url), 'Empty URL passed validation');
+        $this->assertFalse(UrlValidator::validate($url), 'Empty URL passed validation');
     }
 }

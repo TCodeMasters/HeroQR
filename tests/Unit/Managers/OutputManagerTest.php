@@ -16,8 +16,8 @@ class OutputManagerTest extends TestCase
     private QrCode $qrCodeGenerator;
     private OutputManager $outputManager;
 
-    /** 
-     * Setup method
+    /**
+     * Configures the test environment by initializing the QR code generator
      */
     protected function setUp(): void
     {
@@ -28,7 +28,6 @@ class OutputManagerTest extends TestCase
 
         $this->outputManager = new OutputManager();
         $this->assertInstanceOf(OutputManagerInterface::class, $this->outputManager);
-
     }
 
     /**

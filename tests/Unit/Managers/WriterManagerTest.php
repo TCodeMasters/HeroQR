@@ -4,7 +4,10 @@ namespace HeroQR\Tests\Unit\Managers;
 
 use PHPUnit\Framework\{Attributes\DataProvider, Attributes\Test, TestCase};
 use Endroid\QrCode\Writer\{PngWriter, WebPWriter, SvgWriter, PdfWriter, GifWriter, EpsWriter, BinaryWriter};
-use HeroQR\{Contracts\Managers\AbstractWriterManager, Core\Writers\CustomPngWriter, Managers\WriterManager};
+use HeroQR\{Contracts\Managers\AbstractWriterManager,
+    Core\Writers\CustomPngWriter,
+    Core\Writers\CustomSvgWriter,
+    Managers\WriterManager};
 
 /**
  * Class WriterManagerTest
@@ -14,6 +17,9 @@ class WriterManagerTest extends TestCase
 {
     private WriterManager $writerManager;
 
+    /**
+     * Initializes the WriterManager instance
+     */
     public function setUp(): void
     {
         parent::setUp();
@@ -23,6 +29,9 @@ class WriterManagerTest extends TestCase
         $this->assertInstanceOf(AbstractWriterManager::class, $this->writerManager);
     }
 
+    /**
+     * Provides a mapping of file formats to their respective writer class implementations
+     */
     public static function writerFormatProvider() : array
     {
         return [
@@ -49,10 +58,10 @@ class WriterManagerTest extends TestCase
     }
 
     /** 
-     * Test that the getWriter method returns a custom Writer
+     * Test that the getWriter method returns a custom Png Writer
      */
     #[Test]
-    public function isGetWriterWithCustomParameters()
+    public function isGetWriterWithCustomPngParameters()
     {
         $getWriter = $this->writerManager->getWriter('png', [
             'Marker' => 'M1',
@@ -65,16 +74,32 @@ class WriterManagerTest extends TestCase
     }
 
     /**
+     * Test that the getWriter method returns a custom Svg Writer
+     */
+    #[Test]
+    public function isGetWriterWithCustomSvgParameters()
+    {
+        $getWriter = $this->writerManager->getWriter('svg', [
+            'Marker' => 'M1',
+            'Cursor' => 'C1',
+            'Shape' => 'S1'
+        ]);
+
+        $this->assertIsObject($getWriter);
+        $this->assertInstanceOf(CustomSvgWriter::class, $getWriter);
+    }
+
+    /**
      * Test that the getWriter method throws an exception when unsupported custom format
      */
     #[Test]
     public function isGetWriterWithInvalidCustomParameters()
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage("Custom writers not supported for 'svg'");
+        $this->expectExceptionMessage("Custom writers not supported for 'pdf'");
 
         $customs = ['Marker' => 'M1'];
-        $this->writerManager->getWriter('svg', $customs);
+        $this->writerManager->getWriter('pdf', $customs);
     }
 
     /**

@@ -2,14 +2,14 @@
 
 namespace HeroQR\Tests\Unit\DataTypes;
 
-use HeroQR\DataTypes\Location;
+use HeroQR\DataTypes\LocationValidator;
 use PHPUnit\Framework\{Attributes\DataProvider, Attributes\Test, TestCase};
 
 /**
  * Class LocationTest
  * Tests the Location class
  */
-class LocationTest extends TestCase
+class LocationValidatorTest extends TestCase
 {
     /*
      * Provides various coordinate strings and expected validation results
@@ -50,9 +50,9 @@ class LocationTest extends TestCase
      */
     #[Test]
     #[DataProvider('coordinatesProvider')]
-    public function testLocationValidation(string $coordinate, bool $expected): void
+    public function isLocationValid(string $coordinate, bool $expected): void
     {
-        $result = Location::validate($coordinate);
+        $result = LocationValidator::validate($coordinate);
         $this->assertSame($expected, $result, "Coordinate validation failed for: \"$coordinate\"");
     }
 }

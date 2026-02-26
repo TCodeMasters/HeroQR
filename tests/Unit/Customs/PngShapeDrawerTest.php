@@ -2,14 +2,14 @@
 
 namespace HeroQR\Tests\Unit\Customs;
 
-use HeroQR\Customs\ShapeDrawers;
+use HeroQR\Customs\ShapeDrawers\PngShapeDrawer;
 use PHPUnit\Framework\{Attributes\Test, TestCase};
 
 /**
  * Class ShapeDrawersTest
  * Tests the ShapeDrawers class.
  */
-class ShapeDrawersTest extends TestCase
+class PngShapeDrawerTest extends TestCase
 {
     private false|\GdImage $image;
     private int|false $foregroundColor;
@@ -39,7 +39,7 @@ class ShapeDrawersTest extends TestCase
     #[Test]
     public function isCanDrawSquare(): void
     {
-        ShapeDrawers::drawSquare($this->image, 1, 1, 20, $this->foregroundColor);
+        PngShapeDrawer::drawSquare($this->image, 1, 1, 20, $this->foregroundColor);
 
         $coloredPixelCount = $this->countColoredPixels($this->foregroundColor);
         $this->assertGreaterThan(50, $coloredPixelCount, "Square shape was not drawn correctly.");
@@ -51,7 +51,7 @@ class ShapeDrawersTest extends TestCase
     #[Test]
     public function isCanDrawCircle(): void
     {
-        ShapeDrawers::drawCircle($this->image, 1, 1, 20, $this->foregroundColor);
+        PngShapeDrawer::drawCircle($this->image, 1, 1, 20, $this->foregroundColor);
 
         $coloredPixelCount = $this->countColoredPixels($this->foregroundColor);
         $this->assertGreaterThan(50, $coloredPixelCount, "Circle shape was not drawn correctly.");
@@ -82,7 +82,7 @@ class ShapeDrawersTest extends TestCase
     #[Test]
     public function isCanDrawStar(): void
     {
-        ShapeDrawers::drawStar($this->image, 1, 1, 20, $this->foregroundColor);
+        PngShapeDrawer::drawStar($this->image, 1, 1, 20, $this->foregroundColor);
 
         $coloredPixelCount = $this->countColoredPixels($this->foregroundColor);
         $this->assertGreaterThan(50, $coloredPixelCount, "Star shape was not drawn correctly.");
@@ -94,7 +94,7 @@ class ShapeDrawersTest extends TestCase
     #[Test]
     public function isCanDrawDiamond(): void
     {
-        ShapeDrawers::drawDiamond($this->image, 1, 1, 20, $this->foregroundColor);
+        PngShapeDrawer::drawDiamond($this->image, 1, 1, 20, $this->foregroundColor);
 
         $coloredPixelCount = $this->countColoredPixels($this->foregroundColor);
         $this->assertGreaterThan(50, $coloredPixelCount, "Diamond shape was not drawn correctly.");

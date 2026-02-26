@@ -8,12 +8,10 @@ use Endroid\QrCode\Encoding\{EncodingInterface,Encoding};
 use HeroQR\Contracts\Managers\EncodingManagerInterface;
 
 /**
- * Manages the character encoding for QR codes, ensuring proper encoding for different data types
- * Provides methods for encoding data in various character sets to generate accurate QR codes
- *
- * @package HeroQR\Managers
+ * Manages the character encoding for QR codes
+ * Ensures proper encoding for different data types and provides methods
+ * to set or retrieve the current encoding
  */
-
 class EncodingManager implements EncodingManagerInterface
 {
     private EncodingInterface $encoding;
@@ -29,8 +27,8 @@ class EncodingManager implements EncodingManagerInterface
 
     /**
      * Get the current encoding
-     * 
-     * @return EncodingInterface The current encoding setting
+     *
+     * @return EncodingInterface The current encoding object
      */
     public function getEncoding(): EncodingInterface
     {
@@ -38,10 +36,11 @@ class EncodingManager implements EncodingManagerInterface
     }
 
     /**
-     * Set a new encoding
-     * 
-     * @param string $encoding The desired encoding ('UTF-16' ,'UTF-8', 'ASCII', 'ISO-8859-1', 'ISO-8859-5', 'ISO-8859-15') and more...
-     * @throws \InvalidArgumentException|\Exception If the encoding is invalid or unsupported
+     * Set a new encoding for QR code generation
+     *
+     * @param string $encoding The desired encoding (e.g., 'UTF-8', 'UTF-16', 'ASCII', 'ISO-8859-1', etc.)
+     * @throws \InvalidArgumentException If the encoding string is empty
+     * @throws \Exception If the encoding is invalid or unsupported by the library
      */
     public function setEncoding(string $encoding): void
     {

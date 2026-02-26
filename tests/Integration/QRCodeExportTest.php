@@ -14,6 +14,9 @@ class QRCodeExportTest extends TestCase
     private QRCodeGenerator $qrCodeGenerator;
     private string $outputPath;
 
+    /**
+     * Initializes the QRCodeGenerator instance
+     */
     protected function setUp(): void
     {
         $this->qrCodeGenerator = new QRCodeGenerator();
@@ -33,17 +36,24 @@ class QRCodeExportTest extends TestCase
      */
     #[Test]
     #[DataProvider('formatProvider')]
-    public function itExportsQrcodeToSupportedFormats(string $format): void
+    public function isExportsQrcodeToSupportedFormats(string $format): void
     {
         $this->prepareQRCodeGenerator();
 
         $this->qrCodeGenerator->generate($format);
         $this->qrCodeGenerator->saveTo($this->outputPath);
 
-        $file = $this->outputPath . '.' . ($format === 'binary' ? 'bin' : $format);
+        $extension = ($format === 'binary' ? 'bin' : $format);
+        $file = $this->outputPath . '.' . $extension;
 
         $this->assertFileExists($file);
         $this->assertNotEmpty(file_get_contents($file));
+
+        if ($format === 'svg') {
+            $content = file_get_contents($file);
+            $this->assertStringContainsString('<svg', $content);
+            $this->assertStringContainsString('</svg>', $content);
+        }
 
         $this->deleteFile($file);
     }
@@ -52,7 +62,7 @@ class QRCodeExportTest extends TestCase
      * Test exporting to PDF format conditionally
      */
     #[Test]
-    public function itExportsQrcodeToPdfIfAvailable(): void
+    public function isExportsQrcodeToPdfIfAvailable(): void
     {
         $this->prepareQRCodeGenerator();
 
@@ -77,7 +87,7 @@ class QRCodeExportTest extends TestCase
      * Test exporting with invalid format
      */
     #[Test]
-    public function itFailsExportingWithInvalidFormat(): void
+    public function isFailsExportingWithInvalidFormat(): void
     {
         $this->expectException(\InvalidArgumentException::class);
 
@@ -89,7 +99,7 @@ class QRCodeExportTest extends TestCase
      * Test export without calling generate() first
      */
     #[Test]
-    public function itFailsExportingWithoutGenerateCall(): void
+    public function isFailsExportingWithoutGenerateCall(): void
     {
         $this->expectException(\Error::class);
         $this->qrCodeGenerator->saveTo($this->outputPath);
@@ -103,8 +113,8 @@ class QRCodeExportTest extends TestCase
         $this->qrCodeGenerator->setData('https://example.com', DataType::Url);
         $this->qrCodeGenerator->setSize(300);
         $this->qrCodeGenerator->setMargin(20);
-        $this->qrCodeGenerator->setColor('#FF5733');
-        $this->qrCodeGenerator->setBackgroundColor('#FFFFFF');
+        $this->qrCodeGenerator->setColor(10, 40, 100, 1.0);
+        $this->qrCodeGenerator->setBackgroundColor(23, 49, 150, 0.5);
     }
 
     /**

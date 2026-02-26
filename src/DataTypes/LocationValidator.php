@@ -5,23 +5,18 @@ namespace HeroQR\DataTypes;
 use HeroQR\Contracts\DataTypes\AbstractDataType;
 
 /**
- * Class Location
+ * Validates geographic coordinates (latitude, longitude, optional altitude).
  *
- * This class validates geographic coordinates (latitude, longitude, and optionally altitude).
- * The coordinates should be in the format "latitude,longitude,altitude" or "latitude,longitude".
- * The latitude must be between -90 and 90, and the longitude must be between -180 and 180.
- * If an altitude is provided, it must be a numeric value.
+ * Coordinates must be "latitude,longitude" or "latitude,longitude,altitude".
+ * Latitude: -90 to 90, Longitude: -180 to 180, Altitude: numeric if present.
  *
- * Example: "51.3890, 12.3, 24" or "51.3890, 12.3"
- *
- * @package HeroQR\DataTypes
+ * Example: "51.3890,12.3,24" or "51.3890,12.3"
  */
-
-class Location extends AbstractDataType
+class LocationValidator extends AbstractDataType
 {
-    public static function validate(string $coordinates): bool
+    public static function validate(string $data): bool
     {
-        $coordinates = trim($coordinates);
+        $coordinates = trim($data);
         
         $parts = explode(',', $coordinates);
 

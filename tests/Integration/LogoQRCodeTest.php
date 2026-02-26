@@ -2,18 +2,21 @@
 
 namespace HeroQR\Tests\Integration;
 
-use PHPUnit\Framework\{Attributes\Test,TestCase};
-use HeroQR\{Core\QRCodeGenerator,DataTypes\DataType};
+use HeroQR\{Core\QRCodeGenerator, DataTypes\DataType};
+use PHPUnit\Framework\{Attributes\Test, TestCase};
 
 /**
  * Class LogoQRCodeTest
- * Tests the logo functionality of QRCodeGenerator
+ * Tests the logo functionality of QRCodeGenerator for both PNG and SVG formats
  */
 class LogoQRCodeTest extends TestCase
 {
     private QRCodeGenerator $qrCodeGenerator;
     private string $outputPath;
 
+    /**
+     * Initializes the QRCodeGenerator instance
+     */
     protected function setUp(): void
     {
         $this->qrCodeGenerator = new QRCodeGenerator();
@@ -21,7 +24,101 @@ class LogoQRCodeTest extends TestCase
     }
 
     /**
-     * Create a simple logo image in memory for testing
+     * Test generating QR code with a logo for both PNG and SVG formats
+     */
+    #[Test]
+    public function isGeneratesQrcodeWithLogo(): void
+    {
+        $logoPath = $this->createLogo();
+        $this->configureQrCodeGenerator($logoPath);
+
+        foreach (['png', 'svg'] as $format) {
+            $this->qrCodeGenerator->generate($format);
+            $this->qrCodeGenerator->saveTo($this->outputPath);
+
+            $fullPath = $this->outputPath . '.' . $format;
+            $this->assertFileExists($fullPath);
+
+            $content = file_get_contents($fullPath);
+            $this->assertNotEmpty($content);
+
+            // Specific check for SVG format to ensure logo reference exists
+            if ($format === 'svg') {
+                $this->assertStringContainsString('<image', $content);
+            }
+
+            unlink($fullPath);
+        }
+
+        $this->cleanUp([$logoPath]);
+    }
+
+    /**
+     * Test that providing an invalid logo path
+     */
+    #[Test]
+    public function isFailsWithInvalidLogoPath(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $this->configureQrCodeGenerator('./path/to/nonexistent/logo.png');
+        $this->qrCodeGenerator->generate('png');
+    }
+
+    /**
+     * Test generating an PNG QR code without a logo
+     */
+    #[Test]
+    public function isGeneratesPngWithoutLogo(): void
+    {
+        $this->configureQrCodeGenerator();
+
+        $this->qrCodeGenerator->generate('png');
+        $this->qrCodeGenerator->saveTo($this->outputPath);
+
+        $this->assertFileExists($this->outputPath . '.png');
+        $this->assertNotEmpty(file_get_contents($this->outputPath . '.png'));
+
+        unlink($this->outputPath . '.png');
+    }
+
+    /**
+     * Test generating an SVG QR code without a logo
+     */
+    public function isGeneratesSvgWithoutLogo(): void
+    {
+        $this->configureQrCodeGenerator();
+
+        $this->qrCodeGenerator->generate('svg');
+        $this->qrCodeGenerator->saveTo($this->outputPath);
+
+        $fullPath = $this->outputPath . '.svg';
+        $this->assertFileExists($fullPath);
+
+        $content = file_get_contents($fullPath);
+        $this->assertStringNotContainsString('<image', $content);
+
+        unlink($fullPath);
+    }
+
+    /**
+     * Helper method to configure QRCodeGenerator with common settings
+     */
+    private function configureQrCodeGenerator(string $logoPath = ''): void
+    {
+        $this->qrCodeGenerator->setData('https://example.com', DataType::Url);
+        $this->qrCodeGenerator->setSize(300);
+        $this->qrCodeGenerator->setMargin(20);
+        $this->qrCodeGenerator->setColor(12, 20, 200);
+        $this->qrCodeGenerator->setBackgroundColor(0, 0, 0);
+
+        if ($logoPath) {
+            $this->qrCodeGenerator->setLogo($logoPath);
+        }
+    }
+
+    /**
+     * Create a simple logo image in memory for testing purposes
      */
     private function createLogo(): string
     {
@@ -40,71 +137,7 @@ class LogoQRCodeTest extends TestCase
     }
 
     /**
-     * Test generating QR code with logo
-     */
-    #[Test]
-    public function itGeneratesQrcodeWithLogo(): void
-    {
-        $logoPath = $this->createLogo();
-        $this->configureQrCodeGenerator($logoPath);
-
-        $this->qrCodeGenerator->generate('png');
-        $this->qrCodeGenerator->saveTo($this->outputPath);
-
-        $this->assertFileExists($this->outputPath . '.png');
-        $this->assertNotEmpty(file_get_contents($this->outputPath . '.png'));
-
-        $this->cleanUp([$logoPath, $this->outputPath . '.png']);
-    }
-
-    /**
-     * Test invalid logo path
-     */
-    #[Test]
-    public function itFailsWithInvalidLogoPath(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        $this->configureQrCodeGenerator('./path/to/nonexistent/logo.png');
-        $this->qrCodeGenerator->generate('png');
-        $this->qrCodeGenerator->saveTo($this->outputPath);
-    }
-
-    /**
-     * Test export without logo
-     */
-    #[Test]
-    public function itGeneratesQrcodeWithoutLogo(): void
-    {
-        $this->configureQrCodeGenerator();
-
-        $this->qrCodeGenerator->generate('png');
-        $this->qrCodeGenerator->saveTo($this->outputPath);
-
-        $this->assertFileExists($this->outputPath . '.png');
-        $this->assertNotEmpty(file_get_contents($this->outputPath . '.png'));
-
-        unlink($this->outputPath . '.png');
-    }
-
-    /**
-     * Helper method to configure QRCodeGenerator with common settings.
-     */
-    private function configureQrCodeGenerator(string $logoPath = ''): void
-    {
-        $this->qrCodeGenerator->setData('https://example.com', DataType::Url);
-        $this->qrCodeGenerator->setSize(300);
-        $this->qrCodeGenerator->setMargin(20);
-        $this->qrCodeGenerator->setColor('#FF5733');
-        $this->qrCodeGenerator->setBackgroundColor('#FFFFFF');
-
-        if ($logoPath) {
-            $this->qrCodeGenerator->setLogo($logoPath);
-        }
-    }
-
-    /**
-     * Helper method to clean up generated files.
+     * Helper method to clean up generated files
      */
     private function cleanUp(array $files): void
     {

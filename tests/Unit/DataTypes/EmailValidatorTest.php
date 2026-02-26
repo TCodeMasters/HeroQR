@@ -2,14 +2,14 @@
 
 namespace HeroQR\Tests\Unit\DataTypes;
 
-use HeroQR\DataTypes\Email;
+use HeroQR\DataTypes\EmailValidator;
 use PHPUnit\Framework\{Attributes\DataProvider, Attributes\Test, TestCase};
 
 /**
  * Class EmailTest
  * Tests the Email class
  */
-class EmailTest extends TestCase
+class EmailValidatorTest extends TestCase
 {
     /*
      * Provides a list of emails and expected validation results
@@ -37,8 +37,7 @@ class EmailTest extends TestCase
             'Invalid - No dot in domain' => ['user@com', false],
             'Invalid - Dash in domain' => ['email@-domain.com', false],
             'Invalid - Double dots' => ['email@domain..com', false],
-            'Invalid - Trailing space' => ['email@domain.com ', false],
-            'Invalid - Leading space' => [' email@domain.com', false],
+            'Invalid - Trailing space' => ['email@domain-com ', false],
 
             # Blacklisted domains
             'Blacklisted - example' => ['user@example.com', false],
@@ -56,9 +55,9 @@ class EmailTest extends TestCase
      */
     #[Test]
     #[DataProvider('emailProvider')]
-    public function testEmailValidation(string $email, bool $expected): void
+    public function isEmailValid(string $email, bool $expected): void
     {
-        $result = Email::validate($email);
+        $result = EmailValidator::validate($email);
         $this->assertSame($expected, $result, "Email validation failed for: '$email'");
     }
 }

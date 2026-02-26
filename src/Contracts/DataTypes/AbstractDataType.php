@@ -3,13 +3,9 @@
 namespace HeroQR\Contracts\DataTypes;
 
 /**
- * Abstract class AbstractDataType
- * 
  * This abstract class defines the structure for handling different types of data,
  * including validation, conversion to array or string, and security checks such as 
  * preventing SQL injection and detecting script tags.
- * 
- * @package HeroQR\Contracts\DataTypes
  */
 
 abstract class AbstractDataType
@@ -18,10 +14,10 @@ abstract class AbstractDataType
     /**
      * Validate the given value
      *
-     * @param string $value The value to validate
+     * @param string $data The value to validate
      * @return bool True if the value is valid, false otherwise
      */
-    abstract public static function validate(string $value): bool;
+    abstract public static function validate(string $data): bool;
 
     /**
      * Get the type of the validator
@@ -40,7 +36,7 @@ abstract class AbstractDataType
      * @param array $additionalData Additional data to include in the array
      * @return array The converted array
      */
-    protected static function toArray(string $value, array $additionalData = []): array
+    protected static function toArray(string $value, array $additionalData): array
     {
         $data = ['value' => $value];
 
