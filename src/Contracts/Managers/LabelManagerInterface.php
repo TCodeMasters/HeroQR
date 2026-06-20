@@ -6,14 +6,10 @@ use Endroid\QrCode\{Color\ColorInterface, Label\LabelAlignment};
 use Endroid\QrCode\Label\{Font\FontInterface, Margin\MarginInterface};
 
 /**
- * Interface LabelManagerInterface
- *
  * This interface defines methods for managing the label that can be attached
  * to a QR code. It includes functionality for setting and retrieving label text,
  * font properties, alignment, color, and margin. These options provide flexibility
  * in customizing the appearance of labels on QR codes.
- *
- * @package HeroQR\Contracts\Managers
  */
 interface LabelManagerInterface
 {
@@ -62,9 +58,9 @@ interface LabelManagerInterface
     /**
      * Set the label color
      *
-     * @param string $color The color in hex format (e.g., "#FF5733", "#ffffffFF")
+     * @param array $color The color in hex format (e.g., "#FF5733", "#ffffffFF")
      */
-    public function setLabelColor(string $color): void;
+    public function setLabelColor(array $color): void;
 
     /**
      * Get the current label color

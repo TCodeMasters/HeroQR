@@ -14,7 +14,7 @@ class ColorManagerTest extends TestCase
     private ColorManager $colorManager;
 
     /**
-     * Setup method
+     * Initializes the ColorManager instance
      */
     protected function setUp(): void
     {
@@ -51,10 +51,15 @@ class ColorManagerTest extends TestCase
     {
         $colorManager = $this->colorManager;
 
-        $colorManager->setColor('#FF5733');
+        $colorManager->setColor(['Red' => 255, 'Green' => 87 , 'Blue' => 51, 'Alpha' => 0.8]);
         $customColor = $colorManager->getColor();
 
-        $this->assertEquals([255, 87, 51], [$customColor->getRed(), $customColor->getGreen(), $customColor->getBlue()], 'The custom QR code color should match the provided hex value');
+        $this->assertEqualsWithDelta([255, 87, 51, 0.8], [
+            $customColor->getRed(),
+            $customColor->getGreen(),
+            $customColor->getBlue(),
+            $customColor->getOpacity()
+        ],0.01, 'The custom QR code color should match the provided hex value');
     }
 
     /**
@@ -65,10 +70,15 @@ class ColorManagerTest extends TestCase
     {
         $colorManager = $this->colorManager;
 
-        $colorManager->setBackgroundColor('#33FF57');
+        $colorManager->setBackgroundColor(['Red' => 255, 'Green' => 87 , 'Blue' => 51]);
         $backgroundColor = $colorManager->getBackgroundColor();
 
-        $this->assertEquals([51, 255, 87], [$backgroundColor->getRed(), $backgroundColor->getGreen(), $backgroundColor->getBlue()], 'The custom background color should match the provided hex value');
+        $this->assertEqualsWithDelta([255, 87, 51, 1], [
+            $backgroundColor->getRed(),
+            $backgroundColor->getGreen(),
+            $backgroundColor->getBlue(),
+            $backgroundColor->getOpacity()
+        ],0.01, 'The custom background color should match the provided RGBA value');
     }
 
     /**
@@ -79,77 +89,27 @@ class ColorManagerTest extends TestCase
     {
         $colorManager = $this->colorManager;
 
-        $colorManager->setLabelColor('#3357FF');
+        $colorManager->setLabelColor(['Red' => 100, 'Green' => 87 , 'Blue' => 51]);
         $labelColor = $colorManager->getLabelColor();
 
-        $this->assertEquals([51, 87, 255], [$labelColor->getRed(), $labelColor->getGreen(), $labelColor->getBlue()], 'The custom label color should match the provided hex value');
+        $this->assertEqualsWithDelta([100, 87, 51, 1], [
+            $labelColor->getRed(),
+            $labelColor->getGreen(),
+            $labelColor->getBlue(),
+            $labelColor->getOpacity()
+        ],0.01, 'The custom label color should match the provided RGBA value');
     }
 
     /**
-     * Test the behavior of the hex2rgb method with an invalid hex color
+     * Test Invalid background color
      */
     #[Test]
-    public function isHex2RgbInvalidColor(): void
+    public function isInvalidBackgroundColor(): void
     {
         $colorManager = $this->colorManager;
 
-        $reflection = new \ReflectionClass(ColorManager::class);
-        $hex2rgbMethod = $reflection->getMethod('hex2rgb');
-
-        $fallbackColor = $hex2rgbMethod->invokeArgs($colorManager, ['fffffff']);
-
-        $this->assertNotNull($fallbackColor, 'Expected a fallback color object');
-        $this->assertEquals([0, 0, 0], [$fallbackColor->getRed(), $fallbackColor->getGreen(), $fallbackColor->getBlue()], 'Invalid hex input should fallback to black color [0, 0, 0]');
-    }
-
-    /**
-     * Test the behavior of the hex2rgb method with a valid hex color
-     */
-    #[Test]
-    public function isHex2RgbValidColor(): void
-    {
-        $colorManager = $this->colorManager;
-
-        $reflection = new \ReflectionClass(ColorManager::class);
-        $hex2rgbMethod = $reflection->getMethod('hex2rgb');
-
-        $color = $hex2rgbMethod->invokeArgs($colorManager, ['#EFEFEF']);
-
-        $this->assertNotNull($color, 'Expected a valid color object');
-        $this->assertEquals([239, 239, 239], [$color->getRed(), $color->getGreen(), $color->getBlue()], 'The hex color #EFEFEF should correctly convert to RGB [239, 239, 239]');
-    }
-
-    /**
-     * Test the behavior of the hex2rgb method with a valid hex color with alpha channel
-     */
-    #[Test]
-    public function isHex2RgbaValidColor(): void
-    {
-        $colorManager = $this->colorManager;
-
-        $reflection = new \ReflectionClass(ColorManager::class);
-        $hex2rgbMethod = $reflection->getMethod('hex2rgb');
-
-        $color = $hex2rgbMethod->invokeArgs($colorManager, ['#FF000080']);
-
-        $this->assertNotNull($color, 'Expected a valid color object');
-        $this->assertEquals([255, 0, 0, 64], [$color->getRed(), $color->getGreen(), $color->getBlue(), $color->getAlpha()], 'RGBA values should correctly reflect the hex input #FF000080');
-    }
-
-    /**
-     * Test the behavior of the hex2rgb method with an invalid hex color with alpha channel
-     */
-    #[Test]
-    public function isHex2RgbaInvalidColor(): void
-    {
-        $colorManager = $this->colorManager;
-
-        $reflection = new \ReflectionClass(ColorManager::class);
-        $hex2rgbMethod = $reflection->getMethod('hex2rgb');
-
-        $color = $hex2rgbMethod->invokeArgs($colorManager, ['#FF5733GG']);
-
-        $this->assertNotNull($color, 'Expected a valid color object');
-        $this->assertEquals([0, 0, 0, 0], [$color->getRed(), $color->getGreen(), $color->getBlue(), $color->getAlpha()], 'Invalid hex color should return default black color [0, 0, 0, 0]');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Blue must be integer (0-255). Input: 290');
+        $colorManager->setBackgroundColor(['Red' => 255, 'Green' => 87 , 'Blue' => 290]);
     }
 }

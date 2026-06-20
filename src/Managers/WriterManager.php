@@ -8,12 +8,7 @@ use Endroid\QrCode\Writer\WriterInterface;
 use HeroQR\Contracts\Managers\AbstractWriterManager;
 
 /**
- * Manages and creates QR code writer instances
- * 
- * This class handles the creation and validation of both standard and custom QR code writers.
- * It ensures proper initialization of writers based on the requested format and custom parameters.
- * 
- * @package HeroQR\Managers
+ * Manages and creates QR code writer instances, including standard and custom writers
  */
 class WriterManager extends AbstractWriterManager
 {
@@ -21,20 +16,21 @@ class WriterManager extends AbstractWriterManager
      * Maps standard format names to their respective writer classes
      */
     protected const STANDARD_WRITERS = [
-        'png' => 'Endroid\\QrCode\\Writer\\PngWriter',
-        'svg' => 'Endroid\\QrCode\\Writer\\SvgWriter',
-        'eps' => 'Endroid\\QrCode\\Writer\\EpsWriter',
-        'pdf' => 'Endroid\\QrCode\\Writer\\PdfWriter',
-        'binary' => 'Endroid\\QrCode\\Writer\\BinaryWriter',
-        'webp' => 'Endroid\\QrCode\\Writer\\WebPWriter',
-        'gif' => 'Endroid\\QrCode\\Writer\\GifWriter'
+        'png'       => 'Endroid\\QrCode\\Writer\\PngWriter',
+        'svg'       => 'Endroid\\QrCode\\Writer\\SvgWriter',
+        'eps'       => 'Endroid\\QrCode\\Writer\\EpsWriter',
+        'pdf'       => 'Endroid\\QrCode\\Writer\\PdfWriter',
+        'binary'    => 'Endroid\\QrCode\\Writer\\BinaryWriter',
+        'webp'      => 'Endroid\\QrCode\\Writer\\WebPWriter',
+        'gif'       => 'Endroid\\QrCode\\Writer\\GifWriter'
     ];
 
     /**
      * Maps formats to their custom writer implementations
      */
     protected const CUSTOM_WRITERS = [
-        'png' => 'HeroQR\Core\Writers\CustomPngWriter'
+        'png' => 'HeroQR\Core\Writers\CustomPngWriter',
+        'svg' => 'HeroQR\Core\Writers\CustomSvgWriter'
     ];
 
     /**
@@ -47,11 +43,11 @@ class WriterManager extends AbstractWriterManager
     ];
 
     /**
-     * Returns a writer based on format and custom settings.
+     * Returns a writer based on format and custom settings
      *
-     * @param string $format The desired output format.
-     * @param array $customs (Optional) Custom settings for the writer.
-     * @return WriterInterface A writer for the specified format and settings.
+     * @param string $format The desired output format
+     * @param array $customs (Optional) Custom settings for the writer
+     * @return WriterInterface A writer for the specified format and settings
      */
     public function getWriter(string $format, array $customs = []): WriterInterface
     {
@@ -71,11 +67,11 @@ class WriterManager extends AbstractWriterManager
     }
 
     /**
-     * Returns a custom writer based on format and custom settings.
+     * Returns a custom writer based on format and custom settings
      *
-     * @param string $format The desired output format.
-     * @param array $customs Custom settings for the writer.
-     * @return WriterInterface A custom writer for the specified format and settings.
+     * @param string $format The desired output format
+     * @param array $customs Custom settings for the writer
+     * @return WriterInterface A custom writer for the specified format and settings
      */
     protected function getCustomWriter(string $format, array $customs): WriterInterface
     {
@@ -83,10 +79,10 @@ class WriterManager extends AbstractWriterManager
     }
 
     /**
-     * Returns a standard writer based on the format.
+     * Returns a standard writer based on the format
      *
-     * @param string $format The desired output format.
-     * @return WriterInterface A standard writer for the specified format.
+     * @param string $format The desired output format
+     * @return WriterInterface A standard writer for the specified format
      */
     protected function getStandardWriter(string $format): WriterInterface
     {
@@ -153,8 +149,8 @@ class WriterManager extends AbstractWriterManager
     }
 
     /**
-     * Validates and normalizes a custom pattern string
-     * 
+     * Validate and normalize a custom pattern
+     *
      * @param string $value The pattern value to validate
      * @param string $prefix The expected prefix (M, C, or S)
      * @return string The validated and normalized pattern

@@ -7,12 +7,8 @@ namespace HeroQR\Managers;
 use HeroQR\Contracts\Managers\LogoManagerInterface;
 
 /**
- * Manages logo-related settings for QR code integration, including file path, size, and background options
- * Provides methods to set and retrieve logo properties for customization
- * 
- * @package HeroQR\Managers
+ * Manages logo settings for QR codes, including file path, size, and background options
  */
-
 class LogoManager implements LogoManagerInterface
 {
     private string $logoPath = '';
@@ -20,9 +16,9 @@ class LogoManager implements LogoManagerInterface
     private bool $logoBackground = false;
 
     /**
-     * Set the logo path
-     * 
-     * @param string $logoPath The file path to the logo
+     * Set the logo file path
+     *
+     * @param string $logoPath File path to the logo
      * @throws \InvalidArgumentException If the file does not exist or is not readable
      */
     public function setLogo(string $logoPath): void
@@ -45,9 +41,9 @@ class LogoManager implements LogoManagerInterface
     }
 
     /**
-     * Set whether the logo should have a background
-     * 
-     * @param bool $logoBackground True if the logo should have a background, false otherwise
+     * Enable or disable logo background
+     *
+     * @param bool $logoBackground True to enable background, false to disable
      */
     public function setLogoBackground(bool $logoBackground): void
     {
@@ -55,9 +51,9 @@ class LogoManager implements LogoManagerInterface
     }
 
     /**
-     * Get the current logo background setting
-     * 
-     * @return bool True if the logo has a background, false otherwise
+     * Check if logo background is enabled
+     *
+     * @return bool True if background is enabled, false otherwise
      */
     public function getLogoBackground(): bool
     {
@@ -66,9 +62,9 @@ class LogoManager implements LogoManagerInterface
 
     /**
      * Set the logo size
-     * 
-     * @param int $size The size of the logo
-     * @throws \InvalidArgumentException If the size is not a positive integer
+     *
+     * @param int $size Positive integer for logo size
+     * @throws \InvalidArgumentException If size is not positive
      */
     public function setLogoSize(int $size): void
     {

@@ -2,12 +2,18 @@
 
 namespace HeroQR\DataTypes;
 
+/**
+ * Represents all supported data types in HeroQR
+ *
+ * Each enum value holds the corresponding class name for validation and generation
+ */
 enum DataType: string
 {
-    case Text = Text::class;
-    case Url = Url::class;
-    case Email = Email::class;
-    case Phone = Phone::class;
-    case Wifi = Wifi::class;
-    case Location = Location::class;
+    case None = NoneValidator::class;
+    case Text = TextValidator::class;
+    case Url = UrlValidator::class;
+    case Email = EmailValidator::class;
+    case Phone = PhoneValidator::class;
+    case Wifi = WifiValidator::class;
+    case Location = LocationValidator::class;
 }

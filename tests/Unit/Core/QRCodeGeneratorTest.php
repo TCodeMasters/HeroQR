@@ -5,7 +5,6 @@ namespace HeroQR\Tests\Unit\Core;
 use Endroid\QrCode\Matrix\Matrix;
 use HeroQR\{Core\QRCodeGenerator, DataTypes\DataType};
 use PHPUnit\Framework\{Attributes\DataProvider, Attributes\Test, TestCase};
-use http\Exception\InvalidArgumentException;
 
 /**
  * Class QRCodeGeneratorTest
@@ -89,9 +88,9 @@ class QRCodeGeneratorTest extends TestCase
     #[Test]
     public function isSetColorValid(): void
     {
-        $this->qrCodeGenerator->setColor('#FF5733');
+        $this->qrCodeGenerator->setColor(10,50,200,0.6);
         $color = $this->qrCodeGenerator->getColor();
-        $this->assertEquals([255, 87, 51, 0], [$color->getRed(), $color->getGreen(), $color->getBlue(), $color->getAlpha()]);
+        $this->assertEqualsWithDelta([10, 50, 200, 0.6], [$color->getRed(), $color->getGreen(), $color->getBlue(), $color->getOpacity()],0.01);
     }
 
     /**
@@ -101,7 +100,7 @@ class QRCodeGeneratorTest extends TestCase
     public function isSetColorInvalid(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->qrCodeGenerator->setColor('invalid-color');
+        $this->qrCodeGenerator->setColor(200, 230, 210, 2);
     }
 
     /**
@@ -110,9 +109,9 @@ class QRCodeGeneratorTest extends TestCase
     #[Test]
     public function isSetBackgroundColorValid(): void
     {
-        $this->qrCodeGenerator->setBackgroundColor('#FFFFFF');
+        $this->qrCodeGenerator->setBackgroundColor(200, 100, 0);
         $color = $this->qrCodeGenerator->getBackgroundColor();
-        $this->assertEquals([255, 255, 255, 0], [$color->getRed(), $color->getGreen(), $color->getBlue(), $color->getAlpha()]);
+        $this->assertEquals([200, 100, 0, 1], [$color->getRed(), $color->getGreen(), $color->getBlue(), $color->getOpacity()]);
     }
 
     /**
@@ -122,7 +121,7 @@ class QRCodeGeneratorTest extends TestCase
     public function isSetBackgroundColorInvalid(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->qrCodeGenerator->setBackgroundColor('invalid-color');
+        $this->qrCodeGenerator->setBackgroundColor(1, 500, 230);
     }
 
     /**
@@ -149,12 +148,72 @@ class QRCodeGeneratorTest extends TestCase
     }
 
     /**
+     * Test saving the QR code to a valid path for both PNG and SVG
+     */
+    #[Test]
+    public function isSaveToValidPathForMultipleFormats(): void
+    {
+        $this->qrCodeGenerator->setData('https://github.com/AmirezaEb/HeroQR', DataType::Url);
+
+        foreach (['png', 'svg'] as $format) {
+            $outputPath = './test_qrcode_' . $format;
+
+            $this->qrCodeGenerator->generate($format);
+            $this->assertTrue($this->qrCodeGenerator->saveTo($outputPath));
+
+            $fullPath = $outputPath . '.' . $format;
+            $this->assertFileExists($fullPath);
+
+            if ($format === 'svg') {
+                $content = file_get_contents($fullPath);
+                $this->assertStringContainsString('<svg', $content);
+            }
+
+            unlink($fullPath);
+        }
+    }
+
+    /**
+     * Test getting the matrix after generating the QR code in SVG
+     */
+    #[Test]
+    public function isGetMatrixValidWithSvg(): void
+    {
+        $this->qrCodeGenerator->setData('HeroQR', DataType::Text);
+        $this->qrCodeGenerator->generate('svg');
+        $matrix = $this->qrCodeGenerator->getMatrix();
+
+        $this->assertInstanceOf(Matrix::class, $matrix);
+    }
+
+    /**
+     * Test generating a valid QR code in SVG format
+     */
+    #[Test]
+    public function isGenerateSvgValid(): void
+    {
+        $this->qrCodeGenerator->setData('AmirReza', DataType::Text);
+        $this->qrCodeGenerator->generate('svg');
+
+        $result = $this->qrCodeGenerator->getDataUri();
+
+        $this->assertStringStartsWith('data:image/svg+xml;base64', $result);
+        $this->assertNotEmpty($result);
+    }
+
+    /**
      * Test setting a valid label for the QR code
      */
     #[Test]
     public function isSetLabelValid(): void
     {
-        $this->qrCodeGenerator->setLabel('Test Label', 'center', '#000000', 20, [0, 10, 10, 10]);
+        $this->qrCodeGenerator->setLabel(
+            label: 'Test Label',
+            textAlign: 'center',
+            textColor: ['r' => 200, 'g' => 123, 'b' => 12],
+            fontSize: 20,
+            margin: [0, 10, 10, 10]
+        );
         $this->assertEquals('Test Label', $this->qrCodeGenerator->getLabel());
     }
 

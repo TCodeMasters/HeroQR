@@ -15,7 +15,7 @@ final class LogoManagerTest extends TestCase
     private LogoManager $logoManager;
 
     /**
-     * Setup method
+     * Initializes the LogoManager instance
      */
     protected function setUp(): void
     {

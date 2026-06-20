@@ -19,8 +19,8 @@ class ImageOverlayTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->validBackgroundKey = 'M' . mt_rand(1, 4);
-        $this->validOverlayKey = 'C' . mt_rand(1, 4);
+        $this->validBackgroundKey = 'M' . mt_rand(1, 6);
+        $this->validOverlayKey = 'C' . mt_rand(1, 6);
     }
 
     /**

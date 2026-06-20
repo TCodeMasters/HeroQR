@@ -2,28 +2,32 @@
 
 namespace HeroQR\Core\Writers;
 
-use HeroQR\Contracts\Customs\AbstractWriter;
-use Endroid\QrCode\{Label\LabelInterface,Logo\LogoInterface, QrCodeInterface};
-use Endroid\QrCode\Writer\Result\{GdResult, PngResult, ResultInterface};
+use Endroid\QrCode\{Label\LabelInterface,
+    Logo\LogoInterface,
+    QrCodeInterface,
+    Writer\Result\GdResult,
+    Writer\Result\PngResult,
+    Writer\Result\ResultInterface};
+use HeroQR\Contracts\Customs\Writer\AbstractPngWriter;
 
 /**
- * Custom PNG Writer for generating QR codes with optional compression level
- * Allows for customized QR code generation with flexible compression settings
+ * Writes QR codes as PNG with custom options
  *
- * @package HeroQR\Core\Writers
+ * Extends the base PNG writer to allow optional compression and
+ * handles embedding logos and labels in the QR code
  */
-readonly class CustomPngWriter extends AbstractWriter
+readonly class CustomPngWriter extends AbstractPngWriter
 {
     public const WRITER_OPTION_COMPRESSION_LEVEL = 'compression_level';
 
     /**
-     * Generates a PNG result from a QR code, with optional logo and label
+     * Generates an PNG QR code with optional logo, label, and customization options
      *
      * @param QrCodeInterface $qrCode QR Code instance to render
      * @param LogoInterface|null $logo Optional logo to embed in the QR code
      * @param LabelInterface|null $label Optional label to add to the QR code
-     * @param array $options Writer options (compression level and...)
-     * @return ResultInterface The resulting PNG QR code
+     * @param array $options Optional PNG flags (compression level and...)
+     * @return ResultInterface PNG result of the QR code
      * @throws \Exception
      */
     public function write(
@@ -31,7 +35,8 @@ readonly class CustomPngWriter extends AbstractWriter
         ?LogoInterface  $logo = null,
         ?LabelInterface $label = null,
         array           $options = []
-    ): ResultInterface{
+    ): ResultInterface
+    {
 
         $options[self::WRITER_OPTION_COMPRESSION_LEVEL] = $options[self::WRITER_OPTION_COMPRESSION_LEVEL] ?? 1;
 

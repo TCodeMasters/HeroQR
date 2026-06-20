@@ -2,11 +2,22 @@
 
 namespace HeroQR\Core;
 
-use Endroid\QrCode\{Builder\Builder, Matrix\Matrix};
-use Endroid\QrCode\{Color\ColorInterface, ErrorCorrectionLevel, Exception\ValidationException, RoundBlockSizeMode};
-use Endroid\QrCode\Writer\{Result\ResultInterface, WriterInterface};
-use HeroQR\{Contracts\QRCodeGeneratorInterface, DataTypes\DataType};
-use HeroQR\Managers\{ColorManager, EncodingManager, LabelManager, LogoManager, OutputManager, WriterManager};
+use Endroid\QrCode\{Builder\Builder,
+    Color\ColorInterface,
+    ErrorCorrectionLevel,
+    Exception\ValidationException,
+    Matrix\Matrix,
+    RoundBlockSizeMode,
+    Writer\Result\ResultInterface,
+    Writer\WriterInterface};
+use HeroQR\{Contracts\QRCodeGeneratorInterface,
+    DataTypes\DataType,
+    Managers\ColorManager,
+    Managers\EncodingManager,
+    Managers\LabelManager,
+    Managers\LogoManager,
+    Managers\OutputManager,
+    Managers\WriterManager};
 
 /**
  * Handles the generation of QR codes with customizable options.
@@ -15,8 +26,6 @@ use HeroQR\Managers\{ColorManager, EncodingManager, LabelManager, LogoManager, O
  * (PNG, SVG, PDF and More) with optional customization options such as shapes,
  * markers, and internal patterns. Ensures flexibility and ease of use
  * for both standard and advanced use cases.
- *
- * @package HeroQR/Core
  */
 class QRCodeGenerator implements QrCodeGeneratorInterface
 {
@@ -45,8 +54,8 @@ class QRCodeGenerator implements QrCodeGeneratorInterface
         private readonly WriterManager   $writerManager = new WriterManager(),
         private readonly OutputManager   $outputManager = new OutputManager(),
         private readonly EncodingManager $encodingManager = new EncodingManager(),
-        private RoundBlockSizeMode $roundBlockSizeMode = RoundBlockSizeMode::Margin,
-        private ErrorCorrectionLevel $errorCorrectionLevel = ErrorCorrectionLevel::High
+        private RoundBlockSizeMode       $roundBlockSizeMode = RoundBlockSizeMode::Margin,
+        private ErrorCorrectionLevel     $errorCorrectionLevel = ErrorCorrectionLevel::High
     )
     {
         $this->labelManager = new LabelManager($this->colorManager);
@@ -175,22 +184,27 @@ class QRCodeGenerator implements QrCodeGeneratorInterface
      * Set the data to be encoded in the QR code
      *
      * @param string $data The data to encode
-     * @param DataType $type DataType auto validation (default = DataType::Text)
+     * @param DataType $type DataType auto validation (Default None)
      * @return self
      */
-    public function setData(string $data, DataType $type = DataType::Text): self
+    public function setData(string $data, DataType $type = DataType::None): self
     {
-        $class = $type->value;
+        $data = trim($data);
 
-        if (!$class::validate($data)) {
-            throw new \InvalidArgumentException("Invalid data for type: " . $class::getType());
-        }
-
-        if (empty(trim($data))) {
+        if ($data === '') {
             throw new \InvalidArgumentException('Data cannot be empty.');
         }
 
+        $validatorClass = $type->value;
+
+        if (!$validatorClass::validate($data)) {
+            throw new \InvalidArgumentException(
+                sprintf("Invalid data for type: %s", $validatorClass::getType())
+            );
+        }
+
         $this->data = $this->dataSanitizer($data, $type);
+
         return $this;
     }
 
@@ -349,15 +363,25 @@ class QRCodeGenerator implements QrCodeGeneratorInterface
     }
 
     /**
-     * Set the color of the QR code foreground
+     * Set the foreground color of the QR code
      *
-     * @param string $hexColor The hexadecimal color code
-     * @return self
-     * @throws \InvalidArgumentException If the color format is invalid
+     * @param int $r Red component (0-255)
+     * @param int $g Green component (0-255)
+     * @param int $b Blue component (0-255)
+     * @param float $a Alpha/opacity (0.0 = fully transparent, 1.0 = fully opaque)
+     * @return $this Returns the QRCodeGenerator instance for method chaining
+     *
+     * @throws \InvalidArgumentException If any value is out of the valid range
      */
-    public function setColor(string $hexColor): self
+    public function setColor(int $r, int $g, int $b, float $a = 1.0): self
     {
-        $this->colorManager->setColor($hexColor);
+        $this->colorManager->setColor([
+            'Red' => $r,
+            'Green' => $g,
+            'Blue' => $b,
+            'Alpha' => $a
+        ]);
+
         return $this;
     }
 
@@ -374,13 +398,23 @@ class QRCodeGenerator implements QrCodeGeneratorInterface
     /**
      * Set the background color of the QR code
      *
-     * @param string $hexColor The hexadecimal color code
-     * @return self
-     * @throws \InvalidArgumentException If the color format is invalid
+     * @param int $r Red component (0-255)
+     * @param int $g Green component (0-255)
+     * @param int $b Blue component (0-255)
+     * @param ?float $a Alpha/opacity (0.0 = fully transparent, 1.0 = fully opaque)
+     * @return self Returns the QRCodeGenerator instance for method chaining
+     *
+     * @throws \InvalidArgumentException If any value is out of the valid range
      */
-    public function setBackgroundColor(string $hexColor): self
+    public function setBackgroundColor(int $r, int $g, int $b, ?float $a = 1.0): self
     {
-        $this->colorManager->setBackgroundColor($hexColor);
+        $this->colorManager->setBackgroundColor([
+            'Red' => $r,
+            'Green' => $g,
+            'Blue' => $b,
+            'Alpha' => $a ?? 1.0
+        ]);
+
         return $this;
     }
 
@@ -428,8 +462,8 @@ class QRCodeGenerator implements QrCodeGeneratorInterface
      *
      * @param string $label The text label to be displayed on the QR code
      * @param string $textAlign The text alignment for the label (default is 'center')
-     * @param string $textColor The color of the label text in hexadecimal format (default is '#000000')
-     * @param int $fontSize The font size of the label text (default is 50)
+     * @param array $textColor The color of the label text in hexadecimal format (default is ['r' => 0, 'g' => 0, 'b' => 0, 'a' => 1])
+     * @param int   $fontSize The font size of the label text (default is 50)
      * @param array $margin The margin around the label in the format [top, right, bottom, left] (default is [0, 10, 10, 10])
      * @return self Returns the current instance for method chaining
      * @throws \InvalidArgumentException If the label text is empty
@@ -437,7 +471,7 @@ class QRCodeGenerator implements QrCodeGeneratorInterface
     public function setLabel(
         string $label,
         string $textAlign = 'center',
-        string $textColor = '#000000',
+        array  $textColor = ['r' => 0, 'g' => 0, 'b' => 0, 'a' => 1.0],
         int    $fontSize = 50,
         array  $margin = [0, 10, 10, 10]
     ): self
@@ -448,7 +482,12 @@ class QRCodeGenerator implements QrCodeGeneratorInterface
 
         $this->labelManager->setLabel($label);
         $this->labelManager->setLabelAlign($textAlign);
-        $this->labelManager->setLabelColor($textColor);
+        $this->labelManager->setLabelColor([
+            'Red' => $textColor['r'] ?? 0,
+            'Green' => $textColor['g'] ?? 0,
+            'Blue' => $textColor['b'] ?? 0,
+            'Alpha' => $textColor['a'] ?? 1.0
+        ]);
         $this->labelManager->setLabelSize($fontSize);
         $this->labelManager->setLabelMargin($margin);
 
@@ -484,13 +523,11 @@ class QRCodeGenerator implements QrCodeGeneratorInterface
      * Supports data types like Email, Phone, and Location
      *
      * @param string $data The raw data to encode
-     * @param DataType $type The type of data being encoded (Url, WiFi, Location, Text, Email, Phone)
+     * @param ?DataType $type The type of data being encoded (Url, WiFi, Location, Text, Email, Phone)
      * @return string Sanitized and properly formatted data string
      */
-    private function dataSanitizer(string $data, DataType $type): string
+    private function dataSanitizer(string $data, ?DataType $type): string
     {
-        $data = htmlspecialchars($data);
-
         return match ($type) {
             DataType::Email => "mailto:{$data}",
             DataType::Phone => "tel:{$data}",

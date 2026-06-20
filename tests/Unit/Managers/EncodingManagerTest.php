@@ -14,7 +14,7 @@ class EncodingManagerTest extends TestCase
     private EncodingManager $encodingManager;
 
     /**
-     * Setup method
+     * Initializes the EncodingManager instance
      */
     protected function setUp(): void
     {

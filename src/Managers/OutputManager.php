@@ -8,21 +8,17 @@ use Endroid\QrCode\{Matrix\Matrix,Writer\Result\ResultInterface};
 use HeroQR\Contracts\Managers\OutputManagerInterface;
 
 /**
- * Handles QR Code output operations, including:
- * saving to files, generating data URIs, retrieving matrices,
- * and converting outputs to strings
- * 
- * @package HeroQR\Managers
+ * Handles QR code output operations: saving to files, generating data URIs, retrieving matrices, and converting to strings
  */
 class OutputManager implements OutputManagerInterface
 {
     /**
-     * Save the QR Code output to a file
+     * Save the QR code output to a file
      *
-     * @param ResultInterface $builder
-     * @param string $path
-     * @return bool
-     * @throws \InvalidArgumentException if the format is unsupported
+     * @param ResultInterface $builder QR code result builder
+     * @param string $path File path without extension
+     * @return bool True on success
+     * @throws \InvalidArgumentException If the format is unsupported
      */
     public function saveTo(ResultInterface $builder, string $path): bool
     {

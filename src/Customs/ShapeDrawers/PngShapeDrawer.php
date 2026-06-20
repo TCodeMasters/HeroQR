@@ -1,17 +1,11 @@
 <?php
 
-namespace HeroQR\Customs;
+namespace HeroQR\Customs\ShapeDrawers;
 
 /**
- * Class ShapeDrawers
- *
- * This class provides static methods to draw various shapes (star, square, circle, diamond)
- * on a GD image resource. Each method is designed to handle specific shape-drawing logic
- * based on the provided parameters such as position, size, and color.
- *
- * @package HeroQR\Customs
+ * Provides static methods to draw basic shapes (star, square, circle, diamond) on a GD image
  */
-class ShapeDrawers
+class PngShapeDrawer
 {
     /**
      * Draws a star shape on the image
@@ -22,7 +16,8 @@ class ShapeDrawers
         int      $columnIndex,
         int      $baseBlockSize,
         int      $foregroundColor
-    ): void {
+    ): void
+    {
         $points = [];
         for ($i = 0; $i < 10; $i++) {
             $angle = $i * M_PI / 5 + M_PI / 2;
@@ -33,7 +28,6 @@ class ShapeDrawers
         imagefilledpolygon($baseImage, $points, $foregroundColor);
     }
 
-
     /**
      * Draws a square shape on the image
      */
@@ -43,7 +37,8 @@ class ShapeDrawers
         int      $columnIndex,
         int      $baseBlockSize,
         int      $foregroundColor
-    ): void {
+    ): void
+    {
         imagefilledrectangle(
             $baseImage,
             $columnIndex * $baseBlockSize,

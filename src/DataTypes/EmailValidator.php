@@ -5,22 +5,17 @@ namespace HeroQR\DataTypes;
 use HeroQR\Contracts\DataTypes\AbstractDataType;
 
 /**
- * Class Email
+ * Provides robust validation for email addresses.
  *
- * This class provides robust validation for email addresses. It includes:
- * - Validating the email format using PHP's `FILTER_VALIDATE_EMAIL`.
- * - Using a regex pattern to ensure a proper email structure.
- * - Checking for the existence of an MX record for the email domain.
- * - Validating the domain against a predefined blacklist.
- * - Normalizing the domain to handle case-insensitivity.
- *
- * @package HeroQR\DataTypes
+ * Validates format, applies a regex, checks domain MX/A records,
+ * and blocks blacklisted domains.
  */
-
-class Email extends AbstractDataType
+class EmailValidator extends AbstractDataType
 {
-    public static function validate(string $email): bool
+    public static function validate(string $data): bool
     {
+        $email = trim($data);
+
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             return false;
         }
@@ -29,7 +24,7 @@ class Email extends AbstractDataType
             return false;
         }
 
-        $domain = substr(strrchr($email, '@'), 1);
+        $domain = strtolower(substr(strrchr($email, '@'), 1));
 
         $blacklist = ['example.com', 'test.com', 'invalid.com', 'nonexistentdomain.xyz'];
         foreach ($blacklist as $blockedDomain) {
