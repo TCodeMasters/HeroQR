@@ -35,7 +35,8 @@
     },
     "require": {
         "php": "^8.2",
-        "endroid/qr-code": "^6.0"
+        "endroid/qr-code": "^6.0",
+        "ext-gd": "*"
     },
     "suggest": {
         "giggsey/libphonenumber-for-php": "Required for advanced phone number validation",
@@ -50,7 +51,6 @@
         }
     },
     "require-dev": {
-        "ext-gd" : "*",
-        "phpunit/phpunit": "^12.0"
+        "phpunit/phpunit": "^11.0"
     }
 }

@@ -10,11 +10,6 @@
 
 HeroQR is a PHP library for generating and customizing QR codes with full control over styling and multi-format output, while remaining ISO/IEC 18004 compliant.
 
-> [!TIP]
-> **Try the Beta!** We are currently testing **v1.2.0-beta** which introduces highly requested features like **SVG Custom Styling** (Shapes, Markers, and Cursors).
-> If you want to experiment with these new features and provide feedback, check out the [Beta Documentation](https://github.com/amirezaeb/heroqr/tree/develop) or install it via:
-> `composer require amirezaeb/heroqr:1.2.0-beta`
-
 ## Table of Contents
 
 - [Features](#features)
@@ -228,7 +223,7 @@ If HeroQR is useful in your projects, you can support its development by:
 - 💰 Donating via TON or USDT
 - 💼 Contacting us for sponsorship opportunities
 
-**GRAM (TON(**
+**GRAM (TON)**
 ```text
 UQBejif4zPS57KWzz9VcqNHgRqLiOs72--xcoMyLkbnvyvn2
 ```
