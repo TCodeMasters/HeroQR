@@ -94,35 +94,6 @@ class ColorManager implements ColorManagerInterface
     }
 
     /**
-     * Converts a hex color string to an RGBA array
-     *
-     * @param string $hexColor Hex color (e.g., #FFF or #FFFFFF)
-     * @return array {Red: int, Green: int, Blue: int, Alpha: float|int} RGBA values
-     * @throws \InvalidArgumentException If hex format is invalid
-     */
-    public function hex2rgb(string $hexColor): array
-    {
-        $hexColor = ltrim($hexColor, '#');
-
-        if (strlen($hexColor) === 3) {
-            $hexColor = "{$hexColor[0]}{$hexColor[0]}{$hexColor[1]}{$hexColor[1]}{$hexColor[2]}{$hexColor[2]}";
-        }
-
-        if (!ctype_xdigit($hexColor) || strlen($hexColor) !== 6) {
-            throw new \InvalidArgumentException("Invalid hex color: #{$hexColor}");
-        }
-
-        [$r, $g, $b] = sscanf($hexColor, "%02x%02x%02x");
-
-        return [
-            'Red'   => $r,
-            'Green' => $g,
-            'Blue'  => $b,
-            'Alpha' => 1.0
-        ];
-    }
-
-    /**
      * Validates that the RGBA array contains all required keys with correct types/values
      *
      * @param array $rgba {Red: int, Green: int, Blue: int, Alpha: float|int} RGBA values
