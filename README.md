@@ -229,9 +229,8 @@ UQBejif4zPS57KWzz9VcqNHgRqLiOs72--xcoMyLkbnvyvn2
 ```
 
 **USDT (TRC-20)**
-```text
-TEbQ2K3kWF1TjE4yRuqp6hTH8FRr7n7xGX
-```
+
+~~TEbQ2K3kWF1TjE4yRuqp6hTH8FRr7n7xGX~~
 
 Organizations interested in sponsoring HeroQR or featuring their brand in the documentation may contact us via the [Contact section](#contact).
 
